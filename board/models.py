@@ -29,3 +29,7 @@ class PriceHistory(models.Model):
 
     def __str__(self):
         return f"{self.product.name}: {self.old_price} -> {self.new_price}"
+
+
+# Ensure signals are registered
+from . import signals  # noqa: E402,F401
