@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Checkout</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6f7f8;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #2e7d32;
+            color: #fff;
+            padding: 15px 20px;
+        }
+        header a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+        .box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        h2 {
+            margin-top: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background: #f1f1f1;
+        }
+        .total {
+            font-size: 18px;
+            font-weight: bold;
+            text-align: right;
+            margin-bottom: 20px;
+        }
+        .field {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .error {
+            color: #c62828;
+            font-size: 14px;
+            margin-top: 4px;
+        }
+        button {
+            background: #2e7d32;
+            color: #fff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #256628;
+        }
+        .back {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="/">🌱 Agro Market</a>
+    &nbsp; | &nbsp;
+    <a href="{% url 'cart' %}">🛒 Cart</a>
+</header>
+
+<div class="container">
+    <div class="box">
+
+        <h2>Checkout</h2>
+
+        <!-- Order items -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td>{{ item.0.name }}</td>
+                    <td>{{ item.1 }}</td>
+                    <td>{{ item.2 }}</td>
+                    <td>{{ item.3 }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total">
+            Total: {{ total }}
+        </div>
+
+        <!-- Checkout form -->
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="field">
+                <label>Full name</label>
+                <input type="text" name="full_name" value="{{ full_name|default:'' }}">
+                {% if errors.full_name %}
+                    <div class="error">{{ errors.full_name }}</div>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label>Phone</label>
+                <input type="text" name="phone" value="{{ phone|default:'' }}">
+                {% if errors.phone %}
+                    <div class="error">{{ errors.phone }}</div>
+                {% endif %}
+            </div>
+
+            <div class="field">
+                <label>Address</label>
+                <input type="text" name="address" value="{{ address|default:'' }}">
+                {% if errors.address %}
+                    <div class="error">{{ errors.address }}</div>
+                {% endif %}
+            </div>
+
+            <button type="submit">Place order</button>
+        </form>
+
+        <div class="back">
+            <a href="{% url 'cart' %}">← Back to cart</a>
+        </div>
+
+    </div>
+</div>
+
+</body>
+</html>

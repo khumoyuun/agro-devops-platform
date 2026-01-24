@@ -1,8 +1,17 @@
 from django.urls import path
-from .views import product_list, health, dashboard
+from . import views
 
 urlpatterns = [
-    path("", product_list, name="product_list"),
-    path("health/", health, name="health"),
-    path("dashboard/", dashboard, name="dashboard"),
+    path("", views.product_list, name="product_list"),
+    path("product/<int:pk>/", views.product_detail, name="product_detail"),
+
+    path("cart/", views.cart_view, name="cart"),
+    path("cart/add/<int:pk>/", views.add_to_cart, name="add_to_cart"),
+    path("cart/remove/<int:pk>/", views.remove_from_cart, name="remove_from_cart"),
+
+    path("checkout/", views.checkout, name="checkout"),
+    path("order/success/<int:pk>/", views.order_success, name="order_success"),
+
+
+    path("health/", views.health, name="health"),
 ]

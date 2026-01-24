@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cart</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        body { font-family: Arial, sans-serif; background:#f6f7f8; margin:0; }
+        header { background:#2e7d32; color:#fff; padding:15px 20px; }
+        header a { color:#fff; text-decoration:none; font-weight:bold; }
+        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+        .box { background:#fff; padding:20px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+        table { width:100%; border-collapse: collapse; margin-top:10px; }
+        th, td { padding:10px; border-bottom:1px solid #ddd; text-align:left; }
+        th { background:#f1f1f1; }
+        input[type="number"] { width: 70px; padding:6px; }
+        .actions { display:flex; gap:10px; align-items:center; }
+        .btn {
+            display:inline-block; padding:10px 14px; border-radius:4px;
+            text-decoration:none; font-weight:bold; cursor:pointer; border:none;
+        }
+        .btn-green { background:#2e7d32; color:#fff; }
+        .btn-green:hover { background:#256628; }
+        .btn-red { background:#c62828; color:#fff; }
+        .btn-red:hover { background:#a32020; }
+        .btn-gray { background:#e0e0e0; color:#222; }
+        .btn-gray:hover { background:#d5d5d5; }
+        .total { text-align:right; font-size:18px; font-weight:bold; margin-top:15px; }
+        .topline { display:flex; justify-content:space-between; align-items:center; }
+        .muted { color:#666; }
+        .footer-actions { display:flex; justify-content:space-between; align-items:center; margin-top:20px; gap:10px; flex-wrap:wrap; }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="/">🌱 Agro Market</a>
+    &nbsp; | &nbsp;
+    <a href="{% url 'cart' %}">🛒 Cart</a>
+</header>
+
+<div class="container">
+    <div class="box">
+
+        <div class="topline">
+            <h2 style="margin:0;">Your Cart</h2>
+            <div class="muted">Items: {{ cart_count|default:0 }}</div>
+        </div>
+
+        {% if cart_items %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th style="width:180px;">Qty</th>
+                        <th>Subtotal</th>
+                        <th style="width:120px;">Remove</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.product.price }}</td>
+
+                            <td>
+                                <form method="post" action="{% url 'cart' %}" class="actions">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="update">
+                                    <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                    <input type="number" name="qty" min="1" value="{{ item.qty }}">
+                                    <button class="btn btn-gray" type="submit">Update</button>
+                                </form>
+                            </td>
+
+                            <td>{{ item.subtotal }}</td>
+
+                            <td>
+                                <form method="post" action="{% url 'cart' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="remove">
+                                    <input type="hidden" name="product_id" value="{{ item.product.id }}">
+                                    <button class="btn btn-red" type="submit">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="total">
+                Total: {{ total }}
+            </div>
+
+            <div class="footer-actions">
+                <a class="btn btn-gray" href="/">← Continue shopping</a>
+
+                <!-- ✅ Checkout button -->
+                <a class="btn btn-green" href="{% url 'checkout' %}">Checkout →</a>
+            </div>
+
+        {% else %}
+            <p class="muted">Cart is empty.</p>
+            <a class="btn btn-gray" href="/">← Go to products</a>
+        {% endif %}
+
+    </div>
+</div>
+
+</body>
+</html>

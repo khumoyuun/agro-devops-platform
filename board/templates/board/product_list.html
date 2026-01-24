@@ -1,18 +1,138 @@
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Farm Product Update Board</title>
-  </head>
-  <body>
-    <h1>Today’s Available Products</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Agro Market</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <ul>
-      {% for p in products %}
-        <li><b>{{ p.name }}</b> — {{ p.quantity }} {{ p.unit }} — {{ p.price }}</li>
-      {% empty %}
-        <li>No products yet. Add from admin.</li>
-      {% endfor %}
-    </ul>
-  </body>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f6f7f8;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #2e7d32;
+            color: white;
+            padding: 15px 20px;
+        }
+        header a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 6px;
+            padding: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+        }
+        .card h3 {
+            margin: 0 0 10px;
+            font-size: 18px;
+        }
+        .price {
+            font-weight: bold;
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+        .card form {
+            margin-top: auto;
+        }
+        button {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background: #256628;
+        }
+        .pagination {
+            margin: 30px 0;
+            text-align: center;
+        }
+        .pagination a {
+            margin: 0 5px;
+            text-decoration: none;
+            color: #2e7d32;
+            font-weight: bold;
+        }
+        .pagination span {
+            margin: 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <a href="/">🌱 Agro Online Market</a>
+    &nbsp; | &nbsp;
+    <a href="{% url 'cart' %}">🛒 Cart</a>
+</header>
+
+<div class="container">
+
+    <h2>Products</h2>
+
+    {% if page_obj %}
+        <div class="grid">
+            {% for product in page_obj %}
+                <div class="card">
+                    <h3>{{ product.name }}</h3>
+
+                    {% if product.description %}
+                        <p>{{ product.description|truncatechars:80 }}</p>
+                    {% endif %}
+
+                    <div class="price">
+                        {{ product.price }} UZS
+                    </div>
+
+                    <form method="post" action="{% url 'add_to_cart' product.id %}">
+                        {% csrf_token %}
+                        <button type="submit">Add to cart</button>
+                    </form>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="pagination">
+            {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}">← Prev</a>
+            {% endif %}
+
+            <span>
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">Next →</a>
+            {% endif %}
+        </div>
+
+    {% else %}
+        <p>No products available.</p>
+    {% endif %}
+
+</div>
+
+</body>
 </html>
