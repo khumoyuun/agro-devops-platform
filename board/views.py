@@ -6,7 +6,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.core.paginator import Paginator
 from django.views.decorators.cache import cache_page
 from django.views.decorators.http import require_POST, require_http_methods
-
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+from django.http import HttpResponse
 from .models import Product, Order, OrderItem
 from .cart import cart_add, cart_remove
 
@@ -261,3 +262,7 @@ def order_success(request, pk):
 
 def health(request):
     return JsonResponse({"status": "ok"})
+
+
+def metrics(request):
+    return HttpResponse(generate_latest(), content_type=CONTENT_TYPE_LATEST)
