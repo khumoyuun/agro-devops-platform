@@ -50,16 +50,28 @@ spec:
             - name: http
               containerPort: 8000
               protocol: TCP
-          {{- with .Values.livenessProbe }}
+          
           livenessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.readinessProbe }}
+            httpGet:
+              path: /metrics/
+              port: http
+              httpHeaders:
+                -name: Host
+                 value: localhost
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            
           readinessProbe:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with .Values.resources }}
-          resources:
+	    httpGet:
+              path: /metrics/
+              port: http
+              httpHeaders:
+                - name: Host
+                  value: localhost
+            initialDelaySeconds: 10
+            periodSeconds: 10
+
+   	  resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           {{- with .Values.volumeMounts }}
