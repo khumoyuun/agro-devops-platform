@@ -43,6 +43,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ["gunicorn"]
           args: ["config.wsgi:application", "--bind", "0.0.0.0:8000"]
+          env:
+            - name: DJANGO_ALLOWED_HOSTS
+              value: "*"
           ports:
             - name: http
               containerPort: 8000

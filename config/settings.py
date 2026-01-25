@@ -30,7 +30,7 @@ SECRET_KEY = 'django-insecure-*k47w$8udoe%tlcd8_f7x!v2_^o^d5^4q11y8_$nf31wa$(rcn
 DEBUG = True
 
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
@@ -132,8 +132,7 @@ MIDDLEWARE.insert(
     1, "whitenoise.middleware.WhiteNoiseMiddleware"
 )
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
-
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
 if os.getenv("RENDER_EXTERNAL_HOSTNAME"):
     ALLOWED_HOSTS.append(os.getenv("RENDER_EXTERNAL_HOSTNAME"))
 
