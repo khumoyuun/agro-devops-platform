@@ -28,6 +28,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       serviceAccountName: {{ include "agro-app.serviceAccountName" . }}
+
       {{- with .Values.podSecurityContext }}
       securityContext:
         {{- toYaml . | nindent 8 }}
@@ -39,30 +40,34 @@ spec:
           securityContext:
             {{- toYaml . | nindent 12 }}
           {{- end }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+
           command: ["gunicorn"]
           args: ["config.wsgi:application", "--bind", "0.0.0.0:8000"]
+
           env:
             - name: DJANGO_ALLOWED_HOSTS
               value: "*"
+
           ports:
             - name: http
               containerPort: 8000
               protocol: TCP
-          
+
           livenessProbe:
             httpGet:
               path: /metrics/
               port: http
               httpHeaders:
-                -name: Host
-                 value: localhost
+                - name: Host
+                  value: localhost
             initialDelaySeconds: 15
             periodSeconds: 10
-            
+
           readinessProbe:
-	    httpGet:
+            httpGet:
               path: /metrics/
               port: http
               httpHeaders:
@@ -71,9 +76,11 @@ spec:
             initialDelaySeconds: 10
             periodSeconds: 10
 
-   	  resources:
+          {{- with .Values.resources }}
+          resources:
             {{- toYaml . | nindent 12 }}
           {{- end }}
+
           {{- with .Values.volumeMounts }}
           volumeMounts:
             {{- toYaml . | nindent 12 }}
@@ -83,14 +90,17 @@ spec:
       volumes:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
       {{- with .Values.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
       {{- with .Values.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
